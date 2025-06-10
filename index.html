@@ -1,310 +1,207 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>生成式 AI 產業應用案例儀表板</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-        }
-        .fab-enter-active {
-            transition: opacity 300ms, transform 300ms;
-        }
-        .fab-enter-from {
-            opacity: 0;
-            transform: scale(0.9);
-        }
-        .fab-enter-to {
-            opacity: 1;
-            transform: scale(1);
-        }
-        .modal-enter-active {
-            transition: transform 300ms ease-in-out;
-        }
-        .modal-enter-from {
-            transform: translateX(100%);
-        }
-        .modal-enter-to {
-            transform: translateX(0);
-        }
-        .modal-leave-active {
-             transition: transform 300ms ease-in-out;
-        }
-        .modal-leave-from {
-            transform: translateX(0);
-        }
-        .modal-leave-to {
-            transform: translateX(100%);
-        }
-        .overlay-enter-active {
-            transition: opacity 300ms;
-        }
-        .overlay-enter-from {
-            opacity: 0;
-        }
-        .overlay-enter-to {
-            opacity: 1;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>生成式 AI 應用案例互動儀表板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <!-- React + Babel -->
+  <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <!-- Lucide React UMD -->
+  <script src="https://unpkg.com/lucide-react/dist/umd/lucide-react.production.min.js"></script>
+  <style>
+    body { font-family: 'Noto Sans TC', sans-serif; }
+  </style>
 </head>
 <body class="bg-gray-50">
+  <div id="root" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8"></div>
 
-    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight">生成式 AI 產業應用案例</h1>
-            <p class="mt-2 text-gray-500 max-w-2xl mx-auto">
-                探索全球領導企業如何利用生成式 AI 代理人，在各個領域推動創新。
-            </p>
-        </header>
+  <script type="text/babel">
+    const { useState } = React;
+    const { Search, Plane, Briefcase, Bot } = lucideReact;
 
-        <!-- 初始篩選區 -->
-        <div class="lg:hidden mb-6">
-            <button id="open-filter-btn-mobile" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm text-gray-700 font-semibold">
-                <!-- Filter Icon SVG -->
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L16 11.414V16a1 1 0 01-.293.707l-2 2A1 1 0 0113 18v-1.586l-1.707-1.707A1 1 0 0111 14V11.414L5.293 6.707A1 1 0 015 6V4z"></path></svg>
-                搜尋與篩選
-            </button>
-        </div>
-        <div id="desktop-filter-container" class="hidden lg:block mb-8 p-4 bg-white/80 backdrop-blur-sm rounded-xl shadow-md">
-            <!-- 桌面篩選控制項將由 JS 注入 -->
-        </div>
-
-        <main>
-            <div id="use-case-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- 卡片將由 JS 注入 -->
-            </div>
-        </main>
-    </div>
-
-    <!-- 浮動按鈕 -->
-    <button id="fab-filter-btn" class="lg:hidden fixed bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 z-30 opacity-0 scale-90" aria-label="開啟篩選">
-        <!-- Filter Icon SVG -->
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L16 11.414V16a1 1 0 01-.293.707l-2 2A1 1 0 0113 18v-1.586l-1.707-1.707A1 1 0 0111 14V11.414L5.293 6.707A1 1 0 015 6V4z"></path></svg>
-    </button>
-
-    <!-- 彈出式 Modal -->
-    <div id="filter-modal-overlay" class="fixed inset-0 bg-black/30 z-40 hidden"></div>
-    <div id="filter-modal" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
-        <div class="p-6 h-full flex flex-col">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-gray-800">篩選與搜尋</h2>
-                <button id="close-filter-btn" class="p-1 rounded-full hover:bg-gray-200">
-                    <!-- X Icon SVG -->
-                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div id="modal-filter-container" class="overflow-y-auto">
-                 <!-- Modal 篩選控制項將由 JS 注入 -->
-            </div>
-        </div>
-    </div>
-
-<script>
-    // --- 資料庫 (Data Store) ---
     const useCasesData = [
-        // Automotive & Logistics
-        { industry: "Automotive & Logistics", category: "Customer Agents", company: "Continental", title_zh: "智慧座艙語音方案", description_en: "Continental is using Google's data and AI technologies to develop automotive solutions that are safe, efficient, and user-focused. One of the initial outcomes of this partnership is the integration of Google Cloud's conversational AI technologies into Continental's Smart Cockpit HPC, an in-vehicle speech-command solution.", description_zh: "Continental 正在利用 Google 的數據和 AI 技術來開發汽車解決方案，使其更安全、高效且以用戶為中心。此合作的初步成果之一是將 Google Cloud 的對話式 AI 技術整合到其智慧座艙高效能運算平台 (Smart Cockpit HPC) 中，這是一個車載語音指令解決方案。", is_new: false },
-        { industry: "Automotive & Logistics", category: "Customer Agents", company: "General Motors", title_zh: "OnStar 智慧虛擬助理", description_en: "General Motors’ OnStar has been augmented with new AI features, including a virtual assistant powered by Google Cloud’s conversational AI technologies that are better able to recognize the speaker’s intent.", description_zh: "通用汽車的 OnStar 服務增加了新的 AI 功能，包括一個由 Google Cloud 對話式 AI 技術驅動的虛擬助理，能夠更準確地識別說話者的意圖。", is_new: false },
-        { industry: "Automotive & Logistics", category: "Customer Agents", company: "Mercedes-Benz", title_zh: "車載對話式搜尋", description_en: "Mercedes-Benz is providing conversational search and navigation in the new CLA series cars using Google Cloud’s industry-tuned Automotive AI Agent.", description_zh: "Mercedes-Benz 在新款 CLA 系列車款中，使用 Google Cloud 針對汽車產業調整的 AI 代理人，提供對話式的搜尋與導航功能。", is_new: true },
-        // ... 此處省略了其他產業的資料以縮短篇幅，但完整代碼中應包含所有案例 ...
+      {
+        industry: 'Automotive & Logistics',
+        category: 'Customer Agents',
+        company: 'Mercedes-Benz',
+        title_zh: '車載對話式搜尋',
+        description_zh: 'Mercedes‑Benz 使用 Google Cloud 的汽車產業 AI 代理人，於新款車型提供對話式搜尋與導航功能。',
+        description_en: 'Mercedes‑Benz provides conversational search and navigation in the new CLA series cars using Google Cloud\'s Automotive AI Agent.',
+        is_new: true
+      },
+      {
+        industry: 'Financial Services',
+        category: 'Employee Agents',
+        company: 'HSBC',
+        title_zh: '客服支援助理',
+        description_zh: 'HSBC 利用生成式 AI 協助員工快速取得產品資訊，提升客戶服務品質。',
+        description_en: 'HSBC uses generative AI to help employees quickly find product information, improving customer service.',
+        is_new: false
+      },
+      {
+        industry: 'Media, Marketing & Gaming',
+        category: 'Creative Agents',
+        company: 'Electronic Arts',
+        title_zh: '遊戲內容生成',
+        description_zh: 'EA 探索生成式 AI 加速遊戲素材製作，以更快推出創新遊戲體驗。',
+        description_en: 'EA explores generative AI to accelerate asset creation and deliver new gaming experiences faster.',
+        is_new: false
+      },
+      {
+        industry: 'Technology',
+        category: 'Code Agents',
+        company: 'Github',
+        title_zh: 'Copilot 程式碼助理',
+        description_zh: 'Copilot 透過大型語言模型協助開發者撰寫程式碼，提高開發效率。',
+        description_en: 'Copilot leverages large language models to assist developers with code, boosting productivity.',
+        is_new: false
+      },
+      {
+        industry: 'Public Sector & Nonprofits',
+        category: 'Data Agents',
+        company: 'UNICEF',
+        title_zh: '資料洞察平台',
+        description_zh: 'UNICEF 運用生成式 AI 分析資料，以支援全球兒童福利相關決策。',
+        description_en: 'UNICEF uses generative AI to analyze data and support decisions around children\'s welfare.',
+        is_new: false
+      },
+      {
+        industry: 'Retail',
+        category: 'Customer Agents',
+        company: 'Sephora',
+        title_zh: '個人化購物助理',
+        description_zh: 'Sephora 利用生成式 AI 提供美妝產品推薦，打造個性化購物體驗。',
+        description_en: 'Sephora harnesses generative AI to offer personalized beauty recommendations and shopping experiences.',
+        is_new: true
+      }
     ];
 
-    const industries = [ "全部", "Automotive & Logistics", "Business & Professional Services", "Financial Services", "Healthcare & Life Sciences", "Hospitality & Travel", "Manufacturing, Industrial & Electronics", "Media, Marketing & Gaming", "Public Sector & Nonprofits", "Retail", "Technology", "Telecommunications" ];
-    const agentTypes = [ "全部", "Customer Agents", "Employee Agents", "Creative Agents", "Code Agents", "Data Agents", "Security Agents" ];
+    const industries = ['全部', ...Array.from(new Set(useCasesData.map(c => c.industry)))];
+    const agentTypes = ['全部', ...Array.from(new Set(useCasesData.map(c => c.category)))];
 
-    // --- 應用程式狀態 (State) ---
-    let state = {
-        selectedIndustry: "全部",
-        selectedAgentType: "全部",
-        searchTerm: ""
-    };
-
-    // --- 元素選擇器 (DOM Elements) ---
-    const grid = document.getElementById('use-case-grid');
-    const desktopFilterContainer = document.getElementById('desktop-filter-container');
-    const modalFilterContainer = document.getElementById('modal-filter-container');
-    const fabBtn = document.getElementById('fab-filter-btn');
-    const openMobileBtn = document.getElementById('open-filter-btn-mobile');
-    const closeBtn = document.getElementById('close-filter-btn');
-    const modal = document.getElementById('filter-modal');
-    const overlay = document.getElementById('filter-modal-overlay');
-
-    // --- 渲染函式 (Render Functions) ---
-
-    function createFilterControlsHTML() {
-        // SVG 圖示庫
-        const icons = {
-            Search: `<svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>`,
-            Plane: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>`,
-            Briefcase: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>`,
-            Bot: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8V4m0 8h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
-            // ... 可加入更多圖示
-        };
-        const industryIcons = { "Automotive & Logistics": icons.Plane, "Business & Professional Services": icons.Briefcase, /* ... */ };
-        const agentIcons = { "Customer Agents": icons.Bot, "Employee Agents": icons.Briefcase, /* ... */ };
-        
-        const createButtonsHTML = (items, selected, type, icons) => {
-            return items.map(item => {
-                const isSelected = selected === item;
-                const iconHTML = (icons && icons[item]) ? icons[item] : '';
-                return `
-                    <button
-                      data-type="${type}"
-                      data-value="${item}"
-                      class="filter-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-full transition-all duration-200 flex items-center gap-2 border ${
-                        isSelected 
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-md' 
-                          : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-300'
-                      }"
-                    >
-                      ${iconHTML}
-                      <span>${item === "全部" ? "全部" : item.replace(" Agents", "")}</span>
-                    </button>
-                `;
-            }).join('');
-        };
-
-        return `
-            <div class="space-y-6">
-                <div class="relative">
-                    ${icons.Search}
-                    <input
-                        type="text"
-                        id="search-input"
-                        placeholder="搜尋案例、公司或關鍵字..."
-                        value="${state.searchTerm}"
-                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                    />
-                </div>
-                <div>
-                    <label class="text-sm font-semibold text-gray-600 mb-2 block">產業分類 (Industry)</label>
-                    <div class="flex flex-wrap gap-2" data-filter-group="industry">${createButtonsHTML(industries, state.selectedIndustry, 'industry', industryIcons)}</div>
-                </div>
-                <div>
-                    <label class="text-sm font-semibold text-gray-600 mb-2 block">代理人種類 (Agent Type)</label>
-                    <div class="flex flex-wrap gap-2" data-filter-group="agent">${createButtonsHTML(agentTypes, state.selectedAgentType, 'agent', agentIcons)}</div>
-                </div>
+    function FilterControls({ selectedIndustry, setIndustry, selectedAgent, setAgent, searchTerm, setSearch }) {
+      return (
+        <div className="space-y-6" >
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="搜尋案例、公司或關鍵字..."
+              value={searchTerm}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-semibold text-gray-600 mb-2 block">產業分類 (Industry)</label>
+            <div className="flex flex-wrap gap-2">
+              {industries.map(ind => (
+                <button
+                  key={ind}
+                  onClick={() => setIndustry(ind)}
+                  className={`px-3 py-1.5 text-xs sm:text-sm font-medium rounded-full transition-all duration-200 border flex items-center gap-2 ${selectedIndustry === ind ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-300'}`}
+                >
+                  {ind}
+                </button>
+              ))}
             </div>
-        `;
+          </div>
+          <div>
+            <label className="text-sm font-semibold text-gray-600 mb-2 block">代理人種類 (Agent Type)</label>
+            <div className="flex flex-wrap gap-2">
+              {agentTypes.map(type => (
+                <button
+                  key={type}
+                  onClick={() => setAgent(type)}
+                  className={`px-3 py-1.5 text-xs sm:text-sm font-medium rounded-full transition-all duration-200 border flex items-center gap-2 ${selectedAgent === type ? 'bg-green-600 text-white border-green-600 shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-300'}`}
+                >
+                  {type.replace(' Agents', '')}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
     }
 
-    function renderCards() {
-        const filtered = useCasesData.filter(useCase => {
-            const matchesIndustry = state.selectedIndustry === "全部" || useCase.industry === state.selectedIndustry;
-            const matchesAgentType = state.selectedAgentType === "全部" || useCase.category === state.selectedAgentType;
-            const searchTermLower = state.searchTerm.toLowerCase();
-            const matchesSearch = state.searchTerm === "" || 
-                                useCase.title_zh.toLowerCase().includes(searchTermLower) || 
-                                useCase.description_zh.toLowerCase().includes(searchTermLower) ||
-                                useCase.company.toLowerCase().includes(searchTermLower) ||
-                                useCase.description_en.toLowerCase().includes(searchTermLower);
-            return matchesIndustry && matchesAgentType && matchesSearch;
-        });
-
-        if (filtered.length > 0) {
-            grid.innerHTML = filtered.map(useCase => `
-                <div class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col border border-gray-200 relative">
-                    ${useCase.is_new ? '<div class="absolute top-0 right-0 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-bl-lg rounded-tr-xl">NEW</div>' : ''}
-                    <div class="flex justify-between items-start mb-4">
-                        <h3 class="text-lg font-bold text-gray-900 pr-4">${useCase.title_zh}</h3>
-                        <span class="text-sm font-bold text-indigo-600 whitespace-nowrap">${useCase.company}</span>
-                    </div>
-                    <div class="text-sm text-gray-600 flex-grow space-y-3">
-                        <p>${useCase.description_zh}</p>
-                        <p class="text-xs text-gray-400 italic pt-2 border-t border-gray-200">${useCase.description_en}</p>
-                    </div>
-                    <div class="mt-5 flex flex-wrap gap-2">
-                        <span class="text-xs font-semibold text-blue-800 bg-blue-100 px-3 py-1 rounded-full">${useCase.industry}</span>
-                        <span class="text-xs font-semibold text-green-800 bg-green-100 px-3 py-1 rounded-full">${useCase.category.replace(" Agents", "")}</span>
-                    </div>
-                </div>
-            `).join('');
-        } else {
-            grid.innerHTML = `
-                <div class="md:col-span-2 lg:col-span-3 text-center py-16 px-4 bg-white rounded-lg shadow-sm">
-                    <h3 class="text-lg font-semibold text-gray-700">找不到符合條件的應用案例</h3>
-                    <p class="text-gray-500 mt-2">請試著調整您的篩選條件或清除搜尋關鍵字。</p>
-                </div>
-            `;
-        }
-    }
-    
-    function renderFilterControls() {
-        const controlsHTML = createFilterControlsHTML();
-        desktopFilterContainer.innerHTML = controlsHTML;
-        modalFilterContainer.innerHTML = controlsHTML;
-        addFilterEventListeners();
+    function UseCaseCard({ data }) {
+      return (
+        <div className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col border border-gray-200 relative">
+          {data.is_new && <div className="absolute top-0 right-0 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-bl-lg rounded-tr-xl">NEW</div>}
+          <div className="flex justify-between items-start mb-4">
+            <h3 className="text-lg font-bold text-gray-900 pr-4">{data.title_zh}</h3>
+            <span className="text-sm font-bold text-indigo-600 whitespace-nowrap">{data.company}</span>
+          </div>
+          <div className="text-sm text-gray-600 flex-grow space-y-3">
+            <p>{data.description_zh}</p>
+            <p className="text-xs text-gray-400 italic pt-2 border-t border-gray-200">{data.description_en}</p>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <span className="text-xs font-semibold text-blue-800 bg-blue-100 px-3 py-1 rounded-full">{data.industry}</span>
+            <span className="text-xs font-semibold text-green-800 bg-green-100 px-3 py-1 rounded-full">{data.category.replace(' Agents', '')}</span>
+          </div>
+        </div>
+      );
     }
 
+    function App() {
+      const [industry, setIndustry] = useState('全部');
+      const [agent, setAgent] = useState('全部');
+      const [search, setSearch] = useState('');
 
-    // --- 事件處理 (Event Handlers) ---
-    function handleFilterClick(e) {
-        const button = e.target.closest('.filter-btn');
-        if (!button) return;
+      const filtered = useCasesData.filter(uc => {
+        const matchIndustry = industry === '全部' || uc.industry === industry;
+        const matchAgent = agent === '全部' || uc.category === agent;
+        const searchLower = search.toLowerCase();
+        const matchSearch = search === '' ||
+          uc.title_zh.toLowerCase().includes(searchLower) ||
+          uc.description_zh.toLowerCase().includes(searchLower) ||
+          uc.company.toLowerCase().includes(searchLower) ||
+          uc.description_en.toLowerCase().includes(searchLower);
+        return matchIndustry && matchAgent && matchSearch;
+      });
 
-        const type = button.dataset.type;
-        const value = button.dataset.value;
+      return (
+        <div>
+          <header className="text-center mb-8">
+            <h1 className="text-4xl font-extrabold text-gray-800 tracking-tight">生成式 AI 產業應用案例</h1>
+            <p className="mt-2 text-gray-500 max-w-2xl mx-auto">探索產業領導者如何運用生成式 AI 在各領域推動創新。</p>
+          </header>
 
-        if (type === 'industry') {
-            state.selectedIndustry = value;
-        } else if (type === 'agent') {
-            state.selectedAgentType = value;
-        }
-        
-        renderFilterControls();
-        renderCards();
+          <div className="mb-8 p-4 bg-white/80 backdrop-blur-sm rounded-xl shadow-md">
+            <FilterControls
+              selectedIndustry={industry}
+              setIndustry={setIndustry}
+              selectedAgent={agent}
+              setAgent={setAgent}
+              searchTerm={search}
+              setSearch={setSearch}
+            />
+          </div>
+
+          <main>
+            {filtered.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" >
+                {filtered.map((uc, idx) => <UseCaseCard key={idx} data={uc} />)}
+              </div>
+            ) : (
+              <div className="text-center py-16 px-4 bg-white rounded-lg shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-700">找不到符合條件的應用案例</h3>
+                <p className="text-gray-500 mt-2">請試著調整您的篩選條件或清除搜尋關鍵字。</p>
+              </div>
+            )}
+          </main>
+        </div>
+      );
     }
-    
-    function handleSearchInput(e) {
-        state.searchTerm = e.target.value;
-        renderCards();
-    }
 
-    function openModal() {
-        overlay.classList.remove('hidden');
-        modal.classList.remove('translate-x-full');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        modal.classList.add('translate-x-full');
-        overlay.classList.add('hidden');
-        document.body.style.overflow = '';
-    }
-
-    // --- 事件監聽器設定 ---
-    function addFilterEventListeners() {
-        document.querySelectorAll('#desktop-filter-container, #modal-filter-container').forEach(container => {
-            container.querySelector('[data-filter-group="industry"]').addEventListener('click', handleFilterClick);
-            container.querySelector('[data-filter-group="agent"]').addEventListener('click', handleFilterClick);
-            container.querySelector('#search-input').addEventListener('input', handleSearchInput);
-        });
-    }
-
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 200) {
-            fabBtn.classList.remove('opacity-0', 'scale-90');
-        } else {
-            fabBtn.classList.add('opacity-0', 'scale-90');
-        }
-    });
-
-    fabBtn.addEventListener('click', openModal);
-    openMobileBtn.addEventListener('click', openModal);
-    closeBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', closeModal);
-
-    // --- 初始化 ---
-    document.addEventListener('DOMContentLoaded', () => {
-        renderFilterControls();
-        renderCards();
-    });
-
-</script>
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
 </body>
 </html>
